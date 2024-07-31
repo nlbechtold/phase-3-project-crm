@@ -1,26 +1,10 @@
 import sqlite3
 connection = sqlite3.connect("crm.db")
 cursor = connection.cursor()
+from faker.providers import BaseProvider
+import random
+import matplotlib.pyplot as plt
 
-# class Student:
-#     def __init__(self,name,emergency_phone, id=None):
-#         self.id = id
-#         self.name = name
-#         self.emergency_phone = emergency_phone
-    
-#     # Post
-#     def save_student(self):
-#         res = cursor.execute('''
-#         INSERT INTO students(name,emergency_phone)
-#         VALUES(?,?);
-#         ''', (self.name,self.emergency_phone))
-#         # cursor.execute('''
-#         # INSERT INTO students(name,emergency_phone)
-#         # VALUES("{self.name}",{self.emergency_phone});
-#         # ''')
-#         connection.commit()
-#         all = Student.all()
-#         self.id = all[-1].id
 
 class Donor:
     all = []
@@ -67,7 +51,7 @@ class Donor:
                 state= data[2]
             )
         return donor
-# #deleting a donor by id (remove schedules, since we're only doing students) and here is test-- my_teach.delete()
+# #deleting a donor by id 
     def delete_donor(self):
         cursor.execute(f'''
         DELETE FROM donors
@@ -150,16 +134,66 @@ class Campaign:
 
     campaign_name = property(get_name, set_name)
 
+    def save_campaign(self):
+        res = cursor.execute('''
+        INSERT INTO campaigns(name)
+        VALUES(?);
+        ''', (self._name,))
+        connection.commit()
+        all = Campaign.all()
+        self.id = all[-1].id
+
+    @classmethod
+    def all(cls):
+        cursor.execute('SELECT * FROM campaigns')
+        rows = cursor.fetchall()
+        return [cls(*row) for row in rows]
+
+#below are my methods for setting up mathplotlib
+
+campaigns = []
+cursor.execute('SELECT id, name FROM campaigns')
+for row in cursor.fetchall():
+    campaigns.append(Campaign(id=row[0], name=row[1]))
+
+campaign_names = [campaign._name for campaign in campaigns]
+total_donations = [campaign.total_donations() for campaign in campaigns]
+
+plt.figure(figsize=(10, 5))
+plt.bar(campaign_names, total_donations, color='blue')
+plt.xlabel('Campaign Name')
+plt.ylabel('Total Donations')
+plt.title('Total Donations by Campaign')
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+
+plt.show()
 class Donation:
-    all_donations = []
-    def __init__(self, amount, id = None,):
+    # all_donations = []
+    all = []
+    def __init__(self, amount, donor_id, campaign_id, id = None,):
         self.id = id
         self._amount = amount
+        self.donor_id = donor_id
+        self.campaign_id= campaign_id
+#saving/creating donations
+    def save_donation(self):
+        res = cursor.execute('''
+        INSERT INTO donations(amount, donor_id, campaign_id)
+        VALUES(?,?,?);
+        ''', (self.amount, self.donor_id, self.campaign_id))
+        connection.commit()
+        all_donations = Donation.all()
+        self.id = all_donations[-1].id
 
-#getting all time donations
+#getting all donations for using faker
     
-   
-
+    @classmethod
+    def all(cls):
+        cursor.execute('SELECT * FROM donations')
+        rows = cursor.fetchall()
+        return [cls(*row) for row in rows]
+#getting all time donations
     @classmethod
     def total_donations(cls):
         res_don = cursor.execute('SELECT SUM(amount) FROM donations')
@@ -190,13 +224,9 @@ class Donation:
 
     amount = property(get_amount, set_amount)
 
-    #might not neeeeedddd below
-
-
-    # def get_one(donation_id):
-    #     result = cursor.execute('SELECT * FROM donations WHERE id = ?', (donation_id,))
-    #     data = result.fetchone()
-    #     if data:
-    #         return Donation(id=data[0], amount=data[1])
-    #     else:
-    #         return None
+class AnimalProvider(BaseProvider):
+    def animal(self):
+        animals = [
+            'cat', 'dog', 'horse', 'lion', 'tiger', 'bear', 'elephant', 'giraffe', 'zebra', 'kangaroo'
+        ]
+        return random.choice(animals)
