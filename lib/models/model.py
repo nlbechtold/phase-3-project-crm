@@ -26,23 +26,11 @@ class Donor:
 
     donor_name = property(get_name, set_name)
 
-#return of all donations for a specific donor
-
-    def total_donations(self):
-        total = 0
-        res_don = cursor.execute('SELECT amount FROM donations WHERE donor_id = ?', (self.id,))
-        for don in res_don.fetchall():
-            total += don[0] 
-        return total
-
-    def average_donation(self):
-        res_don = cursor.execute('SELECT AVG(amount) FROM donations WHERE donor_id = ?', (self.id,))
-        avg = res_don.fetchone()[0]
-        return int(avg) if avg is not None else 0
+#getting a single donor by id
 
     @classmethod
     def get_one(cls,id):
-        res = cursor.execute(f"SELECT * FROM donors WHERE id = {id};")
+        res = cursor.execute('SELECT * FROM donors WHERE id = ?', (id,))
         data = res.fetchone()
         print(data)
         donor = Donor(
@@ -85,8 +73,7 @@ class Donor:
         self.id = all[-1].id
 
        
-        # Donor.save_donor()
-        # all.append(donor)
+
 
 # #updating/patch of existing donor here is test -- student.patch
     def patch_donor_name(self,name):
@@ -104,6 +91,7 @@ class Campaign:
         self.id = id
         self._name = name
         self.donations = []
+
 #showing total donations for a specific campaign
     def total_donations(self):
         total = 0
@@ -111,16 +99,15 @@ class Campaign:
         for don in res_don.fetchall():
             total += don[0] 
         return total
+
     @classmethod
-    def get_one(cls,id):
-        res = cursor.execute(f"SELECT * FROM campaigns WHERE id = {id};")
-        data = res.fetchone()
-        print(data)
-        campaign = Campaign(
-                id = data[0],
-                name = data[1]
-            )
-        return campaign
+    def get_one(cls, id):
+        cursor.execute('SELECT id, name FROM campaigns WHERE id = ?', (id,))
+        row = cursor.fetchone()
+        if row:
+            return cls(id=row[0], name=row[1])
+        else:
+            return None
 
     #property of campaign
 
@@ -133,6 +120,8 @@ class Campaign:
             raise ValueError("invalid name length")
 
     campaign_name = property(get_name, set_name)
+
+    #saving instances of a campaign
 
     def save_campaign(self):
         res = cursor.execute('''
@@ -151,25 +140,27 @@ class Campaign:
 
 #below are my methods for setting up mathplotlib
 
-campaigns = []
-cursor.execute('SELECT id, name FROM campaigns')
-for row in cursor.fetchall():
-    campaigns.append(Campaign(id=row[0], name=row[1]))
+    def plot_total_donations_by_campaign():
+        campaigns = []
+        cursor.execute('SELECT id, name FROM campaigns')
+        for row in cursor.fetchall():
+            campaigns.append(Campaign(id=row[0], name=row[1]))
 
-campaign_names = [campaign._name for campaign in campaigns]
-total_donations = [campaign.total_donations() for campaign in campaigns]
+        campaign_names = [campaign._name for campaign in campaigns]
+        total_donations = [campaign.total_donations() for campaign in campaigns]
 
-plt.figure(figsize=(10, 5))
-plt.bar(campaign_names, total_donations, color='blue')
-plt.xlabel('Campaign Name')
-plt.ylabel('Total Donations')
-plt.title('Total Donations by Campaign')
-plt.xticks(rotation=45, ha='right')
-plt.tight_layout()
+        plt.figure(figsize=(10, 5))
+        plt.bar(campaign_names, total_donations, color='blue')
+        plt.xlabel('Campaign Name')
+        plt.ylabel('Total Donations')
+        plt.title('Total Donations by Campaign')
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
 
-plt.show()
+        plt.show()
+
 class Donation:
-    # all_donations = []
+
     all = []
     def __init__(self, amount, donor_id, campaign_id, id = None,):
         self.id = id
@@ -223,6 +214,9 @@ class Donation:
             raise ValueError("invalid amount")
 
     amount = property(get_amount, set_amount)
+
+
+#created this class specifically to assign animal names as campaign names for faker
 
 class AnimalProvider(BaseProvider):
     def animal(self):

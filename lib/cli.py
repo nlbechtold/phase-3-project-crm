@@ -2,20 +2,18 @@
 #here is where you do cli commands
 from models.model import *
 import inquirer as inquirer
-# from colorama import Fore, Back, Style
-# questions = [
-#   inquirer.List('size',
-#                 message="What size do you need?",
-#                 choices=['Jumbo', 'Large', 'Standard', 'Medium', 'Small', 'Micro'],
-#             ),
-# ]
-# answers = inquirer.prompt(questions)
+import matplotlib.pyplot as plt
+
+#here is my function for anything pertaining to selecting the campaign class
+
 def displayCampaignMenu():
     questions = [
-    inquirer.List('input4',
-                    message="What would you like to do?",
-                    choices=[('See total amount of donations for campaign by id',1), ('Return to main menu', 3)],
-                ),
+        inquirer.List('input4',
+                      message="What would you like to do?",
+                      choices=[('See total amount of donations and average for campaign by id', 1),
+                               ('Show bar graph of total donations by campaign', 2),
+                               ('Return to main menu', 3)],
+                      ),
     ]
     answers = inquirer.prompt(questions)
     if answers["input4"] == 1:
@@ -24,8 +22,17 @@ def displayCampaignMenu():
         ]
         edit_answers = inquirer.prompt(edit_questions)
         campaign = Campaign.get_one(edit_answers["id"])
-        total_donations = campaign.total_donations()
-        print(f'total donations for this campaign: {total_donations}')
+        if campaign:
+            total_donations = campaign.total_donations()
+            print(f'Total donations for this campaign: {campaign._name} : $ {total_donations}')
+        else:
+            print("Campaign not found")
+    elif answers["input4"] == 2:
+        print (Campaign.plot_total_donations_by_campaign())
+
+    elif answers["input4"] == 3:
+        return
+#here is my function for anything pertaining to the donation class
 
 def displayDonationMenu():
     questions = [
@@ -43,7 +50,7 @@ def displayDonationMenu():
         count_donations = Donation.count_donations()
         print(f'count of donations: {count_donations}')
 
-
+#here is the function for anything pertaining to the donor class and full crud of it
 def displayDonorMenu():
     questions = [
     inquirer.List('input2',
@@ -67,7 +74,7 @@ def displayDonorMenu():
         edit_answers = inquirer.prompt(edit_questions)
         edit_donor = Donor.get_one(edit_answers["id"])
         print(edit_donor.name)
-        # edit_donor.save_donor()
+
         edit_questions = [
             inquirer.Text(name="name", message="Enter new donor name")
         ]
@@ -87,12 +94,12 @@ def displayDonorMenu():
         delete_answers = inquirer.prompt(delete_questions)
         delete_donor = Donor.get_one(delete_answers["id"])   
         delete_donor.delete_donor()
-    # elif answers["input1"] == 5:
+
 
 
 if __name__ == "__main__":
     print('''
-    WELCOME TO YOUR PORTAL
+    Welcome to...WE SAVE ANIMALS' CRM platform
     ''')
     while True:
         questions = [
@@ -112,58 +119,3 @@ if __name__ == "__main__":
             break 
 
 
-
-#         # if answers["input1"] == 1:
-#         #     dev_input = input("Input your id? ")
-#         # elif answers["input1"] == 2:
-#         #     teach_input = input("Input your id? ")
-#         #     user = Teacher.get_one(teach_input)
-#         #     if user:
-#         #         print(f"Hello {user.name}")
-#         #         while True:
-#         #             i2 = input('''
-# 1) What would you like to do?
-# # 1) See total donations for a donor by id
-# # 2) See avg donation for a donor by id
-# 1) Delete a donor - enter id of donor you want to delete
-# 2) Edit a donor - enter id of donor you want to edit
-# 3) See all donors -
-# 4) Create a donor - insert xxx
-# ''')
-# 2) What would you like to do?
-
-# 1) See total amount of donations
-# 2) See count of donations
-# 3) Exit
-# ''')
-# 3) What would you like to do?
-# 1) See total amount of donations by campaign id
-# 2) See graph of campaign by total donations
-# 3) Exit
-# ''')
-#                     if i2 == "1":
-#                         my_students = user.students()
-#                         questions = [
-#                         inquirer.List('student',
-#                                         message="Which Student would you like to grade?",
-#                                         choices=[(student.name,student) for student in my_students],
-#                                     ),
-#                         ]
-#                         selected_student = inquirer.prompt(questions)
-#                         print('\033[31m'+ f"DELETING {selected_student['student'].name}")
-#                         print(Style.RESET_ALL)
-#                         selected_student["student"].delete()
-#                     elif i2 == "3":
-#                         my_students = user.students()
-#                         for student in my_students:
-#                             print(student.name)
-#                     elif i2 == "4":
-#                         break
-#             else:
-#                 print("Not valid teacher id")
-            
-#         elif answers["input1"] == 3:
-#             break
-#         else:
-#             print("Please have valid input")
-#             break

@@ -1,172 +1,86 @@
-# Phase 3 CLI+ORM Project Template
+## Project Description:
 
-## Learning Goals
-
-- Discuss the basic directory structure of a CLI.
-- Outline the first steps in building a CLI.
-
+Welcome to WE SAVE ANIMALS! As a development manager, you will use this application to get quick snapshots of basic KPIs within our CRM database. The basic KPIs will include, total amount of donations, and how much each campaign has brought in, by inputting the campaign's unique id. This application will also allow you to edit a donor, delete a donor, update a donor, and search for a donor; all by their unique id. Data is the driving force in which to make informed decisions to further our mission and increase our total donations, so we can save every animal...
 ---
 
-## Introduction
+## Project Structure
 
-You now have a basic idea of what constitutes a CLI. Fork and clone this lesson
-for a project template for your CLI.
+Here is a breakdown/tree of all the files that will be used, but what do they do?
 
-Take a look at the directory structure:
-
-```console
-.
 ├── Pipfile
 ├── Pipfile.lock
 ├── README.md
 └── lib
     ├── models
-    │   ├── __init__.py
     │   └── model.py
+        └── seed.py
+        └── seeds.sql
     ├── cli.py
     ├── debug.py
-    └── helpers.py
-```
 
-Note: The directory also includes two files named `CONTRIBUTING.md` and
-`LICENSE.md` that are specific to Flatiron's curriculum. You can disregard or
-delete the files if you want.
+As a development manager, the main files you should note are below, along with their description:
 
----
+Model.py
+-This file is mainly for our tech department, but if you are curious, it contains all the classes/objects(donor, donation, capmaign), along with  their respective attributes/properties/methods ( fields, validation rules, and technical processes of each class/object). If you have more of a tech background, here (along with the sql file below), is where you would create new fields for a donor/donation/campaign. Please consult the tech department before diving in.
 
-## Generating Your Environment
+Seed.py
+-This file is also used mainly by our tech department. This file contains the "source of truth" for the data/instances (donor/donation/campaign records).
 
-You might have noticed in the file structure- there's already a Pipfile!
+Seeds.sql
+-Just as the two above, this is also mainly used by our tech department. If you are familiar or knowledgeable about SQL and python, here is where you would utilize sqlite3 and also input the data structures (listed in "model.py"), so this application can work.
 
-Install any additional dependencies you know you'll need for your project by
-adding them to the `Pipfile`. Then run the commands:
+Cli.py
+-Here is your main menu where you will be able to generate total donations, donations by campaign id; as well as edit/read/update/delete a donor using their unique id. This will be explained more in the section below.
 
-```console
-pipenv install
-pipenv shell
-```
+Debug.py
+-Again, this is for the tech department, when you are testing your methods/properties (technical processes/validation rules). Please consult the tech department before use.
 
 ---
 
-## Generating Your CLI
+## How do I use the CLI to access KPIs/donor information?
 
-A CLI is, simply put, an interactive script and prompts the user and performs
-operations based on user input.
+Before you start, you must run the following commands in the terminal:
 
-The project template has a sample CLI in `lib/cli.py` that looks like this:
+-pipenv install
+-pipenv shell
 
-```py
-# lib/cli.py
-
-from helpers import (
-    exit_program,
-    helper_1
-)
-
-
-def main():
-    while True:
-        menu()
-        choice = input("> ")
-        if choice == "0":
-            exit_program()
-        elif choice == "1":
-            helper_1()
-        else:
-            print("Invalid choice")
-
-
-def menu():
-    print("Please select an option:")
-    print("0. Exit the program")
-    print("1. Some useful function")
-
-
-if __name__ == "__main__":
-    main()
-```
-
-The helper functions are located in `lib/helpers.py`:
-
-```py
-# lib/helpers.py
-
-def helper_1():
-    print("Performing useful function#1.")
-
-
-def exit_program():
-    print("Goodbye!")
-    exit()
-```
-
-You can run the template CLI with `python lib/cli.py`, or include the shebang
-and make it executable with `chmod +x`. The template CLI will ask for input, do
-some work, and accomplish some sort of task.
-
-Past that, CLIs can be whatever you'd like, as long as you follow the project
-requirements.
-
-Of course, you will update `lib/cli.py` with prompts that are appropriate for
-your application, and you will update `lib/helpers.py` to replace `helper_1()`
-with a useful function based on the specific problem domain you decide to
-implement, along with adding other helper functions to the module.
-
-In the `lib/models` folder, you should rename `model_1.py` with the name of a
-data model class from your specific problem domain, and add other classes to the
-folder as needed. The file `lib/models/__init__.py` has been initialized to
-create the necessary database constants. You need to add import statements to
-the various data model classes in order to use the database constants.
-
-You are also welcome to implement a different module and directory structure.
-However, your project should be well organized, modular, and follow the design
-principal of separation of concerns, which means you should separate code
-related to:
-
-- User interface
-- Data persistence
-- Problem domain rules and logic
+-python lib/cli.py
 
 ---
 
-## Updating README.md
+You will then see the following set up in the terminal:
 
-`README.md` is a Markdown file that should describe your project. You will
-replace the contents of this `README.md` file with a description of **your**
-actual project.
+[?] What would you like to do?: 
+ > See donors
+   See donations
+   See campaigns
+   Exit
+To access the different objects, simply use the arrow buttons and press enter to select which object you are trying to access:
 
-Markdown is not a language that we cover in Flatiron's Software Engineering
-curriculum, but it's not a particularly difficult language to learn (if you've
-ever left a comment on Reddit, you might already know the basics). Refer to the
-cheat sheet in this assignments's resources for a basic guide to Markdown.
+See donors (here you will be able to select from the following, you just need to have the donor's uniqe id handy)
+[?] What would you like to do?: 
+ > Create Donor
+   Edit Donor by id
+   Find Donor by id
+   Delete Donor by id
+   Return to main menu
 
-### What Goes into a README?
+See donations (here you will be able to select from the follow)
+[?] What would you like to do?: 
+ > See total amount of donations
+   See count of donations
+   Return to main menu
 
-This README serves as a template. Replace the contents of this file to describe
-the important files in your project and describe what they do. Each Python file
-that you edit should get at least a paragraph, and each function should be
-described with a sentence or two.
+See campaigns (here you will be able to select from the following, just have the uniqe id of the campaign)
+[?] What would you like to do?: 
+ > See total amount of donations and average for campaign by id
+   Show bar graph of total donations by campaign
+   Return to main menu
 
-Describe your actual CLI script first, and with a good level of detail. The rest
-should be ordered by importance to the user. (Probably functions next, then
-models.)
-
-Screenshots and links to resources that you used throughout are also useful to
-users and collaborators, but a little more syntactically complicated. Only add
-these in if you're feeling comfortable with Markdown.
-
----
-
-## Conclusion
-
-A lot of work goes into a good CLI, but it all relies on concepts that you've
-practiced quite a bit by now. Hopefully this template and guide will get you off
-to a good start with your Phase 3 Project.
-
-Happy coding!
 
 ---
+
+
 
 ## Resources
 
-- [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
