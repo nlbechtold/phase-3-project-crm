@@ -1,4 +1,4 @@
--- when creating tables in terminal, start(maybe) and always send with ;  
+-- when creating tables in terminal, and always end with ;  
 DROP TABLE donors;
 DROP TABLE donations;
 DROP TABLE campaigns;
